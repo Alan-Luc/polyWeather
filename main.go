@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	apiKey  = "A9fcb0683b9a9a8d43539e4f6fc397ff"
-	lat     = "43.8563707"
-	lon     = "-79.3376825"
-	latLon  = "42.9832406"
-	lonLon  = "-81.243372"
-	baseUrl = "http://api.openweathermap.org/data/2.5/weather"
+	apiKey      = ""
+	latMarkyMoo = "43.8563707"
+	lonMarkyMoo = "-79.3376825"
+	latLon      = "42.9832406"
+	lonLon      = "-81.243372"
+	baseUrl     = "http://api.openweathermap.org/data/2.5/weather"
 )
 
 type ApiData struct {
@@ -56,7 +56,7 @@ func httpRequest(client *http.Client, method string, url string) ([]byte, error)
 }
 
 func main() {
-	url := fmt.Sprintf("%s?lat=%s&lon=%s&appid=%s&units=metric", baseUrl, latLon, lonLon, apiKey)
+	url := fmt.Sprintf("%s?lat=%s&lon=%s&appid=%s&units=metric", baseUrl, latMarkyMoo, lonMarkyMoo, apiKey)
 	c := httpClient()
 	var data ApiData
 
