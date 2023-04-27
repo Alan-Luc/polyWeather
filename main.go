@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/avast/retry-go"
 )
 
 const (
-	apiKey      = ""
+	apiKey      = "A9fcb0683b9a9a8d43539e4f6fc397ff"
 	latMarkyMoo = "43.8563707"
 	lonMarkyMoo = "-79.3376825"
 	latLon      = "42.9832406"
@@ -35,20 +36,17 @@ func httpClient() *http.Client {
 func httpRequest(client *http.Client, method string, url string) ([]byte, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -60,13 +58,23 @@ func main() {
 	c := httpClient()
 	var data ApiData
 
-	time.Sleep(5 * time.Second)
-	res, err := httpRequest(c, "GET", url)
-	if err != nil {
-		fmt.Println("something went wrong with fetch")
-		return
-	}
-	err = json.Unmarshal(res, &data)
+	err := retry.Do(
+		func() error {
+			res, err := httpRequest(c, "GET", url)
+			if err != nil {
+				fmt.Println("something went wrong with fetch")
+				return err
+			}
+			err = json.Unmarshal(res, &data)
+			if err != nil {
+				fmt.Println("something went wrong")
+				return err
+			}
+
+			return nil
+		},
+	)
+
 	if err != nil {
 		fmt.Println("something went wrong")
 		return
